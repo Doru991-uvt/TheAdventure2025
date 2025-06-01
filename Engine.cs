@@ -266,7 +266,7 @@ public class Engine
         SpriteSheet spriteSheet = SpriteSheet.Load(_renderer, "Potion.json", "Assets");
         spriteSheet.ActivateAnimation("Potion");
 
-        PotionObject pot = new(spriteSheet, 3, 1, (worldCoords.X, worldCoords.Y));
+        PotionObject pot = new(spriteSheet, 4, 1, (worldCoords.X, worldCoords.Y));
         _gameObjects.Add(pot.Id, pot);
     }
 }

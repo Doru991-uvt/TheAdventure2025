@@ -17,8 +17,8 @@ public class RandomPotion : IScript
         {
             _nextPotionTimestamp = DateTimeOffset.UtcNow.AddSeconds(Random.Shared.Next(5, 10));
             var playerPos = engine.GetPlayerPosition();
-            var potPosX = playerPos.X + Random.Shared.Next(-50, 50);
-            var potPosY = playerPos.Y + Random.Shared.Next(-50, 50);
+            var potPosX = playerPos.X + Random.Shared.Next(-200, 200);
+            var potPosY = playerPos.Y + Random.Shared.Next(-200, 200);
             engine.AddPotion(potPosX, potPosY, false);
         }
     }
