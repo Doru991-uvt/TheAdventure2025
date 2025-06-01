@@ -20,6 +20,7 @@ public class Engine
     private Level _currentLevel = new();
     private PlayerObject? _player;
     private HealthObject? _healthIndicator;
+    private InterfaceObject? _gameOver;
     private DateTimeOffset _lastUpdate = DateTimeOffset.Now;
 
     public long Frame;
@@ -37,6 +38,7 @@ public class Engine
     {
         _player = new(SpriteSheet.Load(_renderer, "Player.json", "Assets"), 100, 100);
         _healthIndicator = new(SpriteSheet.Load(_renderer, "Heart.json", "Assets"));
+        _gameOver = new(SpriteSheet.Load(_renderer, "GameOver.json", "Assets"), (320, 200));
         var levelContent = File.ReadAllText(Path.Combine("Assets", "terrain.tmj"));
         var level = JsonSerializer.Deserialize<Level>(levelContent);
         if (level == null)
@@ -151,7 +153,7 @@ public class Engine
             {
                 var deltaX = Math.Abs(_player.Position.X - potion.Position.X);
                 var deltaY = Math.Abs(_player.Position.Y - potion.Position.Y);
-                if (deltaX < 24 && deltaY < 24)
+                if (deltaX < 16 && deltaY < 16)
                 {
                     _player.Heal(potion.Heal);
                     toRemove.Add(potion.Id);
@@ -187,6 +189,13 @@ public class Engine
             _healthIndicator.Health = _player.Health;
             _healthIndicator.MaxHealth = _player.MaxHealth();
             _healthIndicator.Render(_renderer);
+        }
+        if (_player is not null && (_gameOver is not null))
+        {
+            if (_player.IsGameOver())
+            {
+                _gameOver.Render(_renderer);
+            }
         }
     }
 

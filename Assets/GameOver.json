@@ -1,0 +1,11 @@
+{
+  "rowCount": 1,
+  "columnCount": 1,
+  "frameWidth": 400,
+  "frameHeight": 400,
+  "frameCenter": {
+    "offsetX": 200,
+    "offsetY": 200
+  },
+  "fileName": "GameOver.png"
+}

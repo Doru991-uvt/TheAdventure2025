@@ -199,4 +199,9 @@ public class PlayerObject : RenderableGameObject
     {
         return _maxHealth;
     }
+
+    public bool IsGameOver()
+    {
+        return State.State == PlayerState.GameOver;
+    }
 }
