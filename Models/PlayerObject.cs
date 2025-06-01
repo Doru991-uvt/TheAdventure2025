@@ -5,6 +5,11 @@ namespace TheAdventure.Models;
 public class PlayerObject : RenderableGameObject
 {
     private const int _speed = 128; // pixels per second
+    private const int _maxHealth = 3;
+    private const double _invincibility = 1.5; //i-frames
+    public int Health { get; private set; }
+    public DateTimeOffset LastHit { get; set; }
+    public bool Invulnerable => (DateTimeOffset.Now - LastHit).TotalSeconds < _invincibility;
 
     public enum PlayerStateDirection
     {
@@ -29,6 +34,26 @@ public class PlayerObject : RenderableGameObject
     public PlayerObject(SpriteSheet spriteSheet, int x, int y) : base(spriteSheet, (x, y))
     {
         SetState(PlayerState.Idle, PlayerStateDirection.Down);
+        Health = _maxHealth;
+        LastHit = DateTimeOffset.Now;
+    }
+    
+    public bool TryDamage(int damage)
+    {
+        if(State.State != PlayerState.GameOver && !Invulnerable)
+        {
+            Health -= damage;
+            if (Health <= 0)
+            {
+                GameOver();
+            }
+            else
+            {
+                LastHit = DateTimeOffset.Now;
+            }
+            return true;
+        }
+        return false;
     }
 
     public void SetState(PlayerState state)

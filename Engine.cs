@@ -22,12 +22,15 @@ public class Engine
 
     private DateTimeOffset _lastUpdate = DateTimeOffset.Now;
 
+    public long Frame;
+
     public Engine(GameRenderer renderer, Input input)
     {
         _renderer = renderer;
         _input = input;
 
         _input.OnMouseClick += (_, coords) => AddBomb(coords.x, coords.y);
+        Frame = 0;
     }
 
     public void SetupWorld()
@@ -79,6 +82,7 @@ public class Engine
 
     public void ProcessFrame()
     {
+        Frame += 1;
         var currentTime = DateTimeOffset.Now;
         var msSinceLastFrame = (currentTime - _lastUpdate).TotalMilliseconds;
         _lastUpdate = currentTime;
@@ -143,17 +147,21 @@ public class Engine
             {
                 continue;
             }
-
-            var tempGameObject = (TemporaryGameObject)gameObject!;
-            var deltaX = Math.Abs(_player.Position.X - tempGameObject.Position.X);
-            var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
-            if (deltaX < 32 && deltaY < 32)
+            if ((TemporaryGameObject)gameObject! is BombObject bomb)
             {
-                _player.GameOver();
+                var deltaX = Math.Abs(_player.Position.X - bomb.Position.X);
+                var deltaY = Math.Abs(_player.Position.Y - bomb.Position.Y);
+                if (deltaX < 32 && deltaY < 32)
+                {
+                    _player.TryDamage(bomb.Damage);
+                }
             }
         }
 
-        _player?.Render(_renderer);
+        if (_player is not null && (!_player.Invulnerable || Frame % 2 == 0))
+        {
+            _player.Render(_renderer);
+        }
     }
 
     public void RenderTerrain()
@@ -212,7 +220,7 @@ public class Engine
         SpriteSheet spriteSheet = SpriteSheet.Load(_renderer, "BombExploding.json", "Assets");
         spriteSheet.ActivateAnimation("Explode");
 
-        TemporaryGameObject bomb = new(spriteSheet, 2.1, (worldCoords.X, worldCoords.Y));
+        BombObject bomb = new(spriteSheet, 2.1, 1, (worldCoords.X, worldCoords.Y));
         _gameObjects.Add(bomb.Id, bomb);
     }
 }
