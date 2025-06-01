@@ -98,7 +98,12 @@ public class Engine
         double right = _input.IsRightPressed() ? 1.0 : 0.0;
         bool isAttacking = _input.IsKeyAPressed() && (up + down + left + right <= 1);
         bool addBomb = _input.IsKeyBPressed();
+        bool tryRevive = _input.IsKeyRPressed();
 
+        if (tryRevive)
+        {
+            _player.TryRevive();
+        }
         _player.UpdatePosition(up, down, left, right, 48, 48, msSinceLastFrame);
         if (isAttacking)
         {
@@ -136,6 +141,21 @@ public class Engine
             if (gameObject is TemporaryGameObject { IsExpired: true } tempGameObject)
             {
                 toRemove.Add(tempGameObject.Id);
+                continue;
+            }
+            if (_player == null)
+            {
+                continue;
+            }
+            if ((TemporaryGameObject)gameObject! is PotionObject potion)
+            {
+                var deltaX = Math.Abs(_player.Position.X - potion.Position.X);
+                var deltaY = Math.Abs(_player.Position.Y - potion.Position.Y);
+                if (deltaX < 24 && deltaY < 24)
+                {
+                    _player.Heal(potion.Heal);
+                    toRemove.Add(potion.Id);
+                }
             }
         }
 
@@ -228,5 +248,16 @@ public class Engine
 
         BombObject bomb = new(spriteSheet, 2.1, 1, (worldCoords.X, worldCoords.Y));
         _gameObjects.Add(bomb.Id, bomb);
+    }
+
+    public void AddPotion(int X, int Y, bool translateCoordinates = true)
+    {
+        var worldCoords = translateCoordinates ? _renderer.ToWorldCoordinates(X, Y) : new Vector2D<int>(X, Y);
+
+        SpriteSheet spriteSheet = SpriteSheet.Load(_renderer, "Potion.json", "Assets");
+        spriteSheet.ActivateAnimation("Potion");
+
+        PotionObject pot = new(spriteSheet, 3, 1, (worldCoords.X, worldCoords.Y));
+        _gameObjects.Add(pot.Id, pot);
     }
 }

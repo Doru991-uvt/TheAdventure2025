@@ -45,6 +45,7 @@ public class PlayerObject : RenderableGameObject
             Health -= damage;
             if (Health <= 0)
             {
+                Health = 0;
                 GameOver();
             }
             else
@@ -54,6 +55,28 @@ public class PlayerObject : RenderableGameObject
             return true;
         }
         return false;
+    }
+
+    public void Heal(int hp)
+    {
+        if (State.State != PlayerState.GameOver)
+        {
+            Health += hp;
+            Health = Health <= _maxHealth ? Health : _maxHealth;
+        }
+    }
+
+    public bool TryRevive()
+    {
+        if (State.State != PlayerState.GameOver)
+        {
+            return false;
+        }
+        State = (PlayerState.Idle, PlayerStateDirection.Down);
+        Health = _maxHealth;
+        var animationName = Enum.GetName(State.State) + Enum.GetName(State.Direction);
+        SpriteSheet.ActivateAnimation(animationName);
+        return true;
     }
 
     public void SetState(PlayerState state)
