@@ -19,7 +19,7 @@ public class Engine
 
     private Level _currentLevel = new();
     private PlayerObject? _player;
-
+    private HealthObject? _healthIndicator;
     private DateTimeOffset _lastUpdate = DateTimeOffset.Now;
 
     public long Frame;
@@ -36,7 +36,7 @@ public class Engine
     public void SetupWorld()
     {
         _player = new(SpriteSheet.Load(_renderer, "Player.json", "Assets"), 100, 100);
-
+        _healthIndicator = new(SpriteSheet.Load(_renderer, "Heart.json", "Assets"));
         var levelContent = File.ReadAllText(Path.Combine("Assets", "terrain.tmj"));
         var level = JsonSerializer.Deserialize<Level>(levelContent);
         if (level == null)
@@ -161,6 +161,12 @@ public class Engine
         if (_player is not null && (!_player.Invulnerable || Frame % 2 == 0))
         {
             _player.Render(_renderer);
+        }
+        if ((_healthIndicator is not null) && (_player is not null))
+        {
+            _healthIndicator.Health = _player.Health;
+            _healthIndicator.MaxHealth = _player.MaxHealth();
+            _healthIndicator.Render(_renderer);
         }
     }
 

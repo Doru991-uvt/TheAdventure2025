@@ -171,4 +171,9 @@ public class PlayerObject : RenderableGameObject
 
         Position = (x, y);
     }
+
+    public int MaxHealth()
+    {
+        return _maxHealth;
+    }
 }

@@ -79,11 +79,11 @@ public unsafe class GameRenderer
     }
 
     public void RenderTexture(int textureId, Rectangle<int> src, Rectangle<int> dst,
-        RendererFlip flip = RendererFlip.None, double angle = 0.0, Point center = default)
+        RendererFlip flip = RendererFlip.None, double angle = 0.0, Point center = default, bool uiElement = false)
     {
         if (_texturePointers.TryGetValue(textureId, out var imageTexture))
         {
-            var translatedDst = _camera.ToScreenCoordinates(dst);
+            var translatedDst = uiElement ? dst : _camera.ToScreenCoordinates(dst);
             _sdl.RenderCopyEx(_renderer, (Texture*)imageTexture, in src,
                 in translatedDst,
                 angle,
